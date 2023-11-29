@@ -18,7 +18,7 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/DevOpsMell/DevOps-Techscrum.fe-test'
+                git branch: 'main', url: 'https://github.com/TechScrumTeamBeta/DevOps-Techscrum.fe.git'
             }
         }
 
@@ -48,14 +48,14 @@ pipeline {
             }
         }
 
-        stage('Deploy Website') {
-            steps {
-                script {
-                    // Add any additional steps to deploy your static website (e.g., copy files to S3, invalidate CDN cache, etc.)
-                }
-            }
-        }
-    }
+    //     stage('Deploy Website') {
+    //         steps {
+    //             script {
+    //                 // Add any additional steps to deploy your static website (e.g., copy files to S3, invalidate CDN cache, etc.)
+    //             }
+    //         }
+    //     }
+    // }
 
     post {
         success {
@@ -64,10 +64,10 @@ pipeline {
         failure {
             echo 'Terraform deployment failed!'
         }
-        cleanup {
-            script {
-                // Clean up any temporary files or resources if needed
-            }
-        }
+        // cleanup {
+        //     script {
+        //         // Clean up any temporary files or resources if needed
+        //     }
+        // }
     }
 }
