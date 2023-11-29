@@ -8,7 +8,7 @@ properties([
 pipeline {
     agent any
     tools {
-        terraform 'terraform'
+        terraform 'Terraform'
     }
     stages {
         stage('Preparing') {
@@ -23,10 +23,10 @@ pipeline {
         }
         stage('Init') {
             steps {
-                withAWS(AWS_ACCESS_KEY_ID     = credentials('jenkins-aws-secret-key-id'),
-                        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key'), 
-                        region: 'ap-southeast-2') {
-                sh 'terraform -chdir=terraform init'
+                script {
+                    withAWS(credential:'jenkins-aws-secret-key-id', region: 'ap-southeast-2') {
+                    sh 'terraform -chdir=terraform init'
+                    }
                 }
             }
         }
