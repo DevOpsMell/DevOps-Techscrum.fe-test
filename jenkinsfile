@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Git Checkout') {
             steps {
-                git branch: 'geekcu', url: 'https://github.com/geekcu/DevOps-Techscrum.fe.git'
+                git branch: 'main', url: 'https://github.com/DevOpsMell/DevOps-Techscrum.fe-test'
             }
         }
         stage('Init') {
