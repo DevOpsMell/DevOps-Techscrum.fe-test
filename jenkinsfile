@@ -1,74 +1,52 @@
+
+properties([
+    parameters([
+        choice(choices: ['plan', 'apply', 'destroy'], name: 'Terraform_Action')
+    ])
+])
+
 pipeline {
     agent any
     tools {
         terraform 'terraform'
     }
-    
-    environment {
-        AWS_ACCESS_KEY_ID     = credentials('jenkins-aws-secret-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
-        }
-    
     stages {
         stage('Preparing') {
             steps {
-                sh 'echo Prepaing'
+                sh 'echo Preparing'
             }
         }
-
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/TechScrumTeamBeta/DevOps-Techscrum.fe.git'
+                git branch: 'geekcu', url: 'https://github.com/geekcu/DevOps-Techscrum.fe.git'
             }
         }
-
-        stage('Terraform Init') {
+        stage('Init') {
             steps {
-                withAWS(region: 'ap-southeast-2')
-                script {
-                    sh 'terraform init'
+                withAWS(AWS_ACCESS_KEY_ID     = credentials('jenkins-aws-secret-key-id'),
+                        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')', 
+                        region: 'ap-southeast-2') {
+                sh 'terraform -chdir=terraform init'
                 }
             }
         }
-
-        stage('Terraform Plan') {
+        stage('Action') {
             steps {
-                script {
-                    sh 'terraform plan -out=tfplan'
+                echo "${params.Terraform_Action}"
+                withAWS(credentials: 'aws-lidi', region: 'ap-southeast-2') {
+                script {    
+                        if (params.Terraform_Action == 'plan') {
+                            sh 'terraform -chdir=terraform plan'
+                        }   else if (params.Terraform_Action == 'apply') {
+                            sh 'terraform -chdir=terraform apply -auto-approve'
+                        }   else if (params.Terraform_Action == 'destroy') {
+                            sh 'terraform -chdir=terraform destroy -auto-approve'
+                        } else {
+                            error "Invalid value for Terraform_Action: ${params.Terraform_Action}"
+                        }
+                    }
                 }
             }
         }
-
-        stage('Terraform Apply') {
-            steps {
-                script {
-                    input 'Proceed with Terraform Apply?'
-
-                    sh 'terraform apply tfplan  --auto-approve'
-                }
-            }
-        }
-
-    //     stage('Deploy Website') {
-    //         steps {
-    //             script {
-    //                 // Add any additional steps to deploy your static website (e.g., copy files to S3, invalidate CDN cache, etc.)
-    //             }
-    //         }
-    //     }
-    // }
-
-    post {
-        success {
-            echo 'Terraform deployment successful!'
-        }
-        failure {
-            echo 'Terraform deployment failed!'
-        }
-        // cleanup {
-        //     script {
-        //         // Clean up any temporary files or resources if needed
-        //     }
-        // }
     }
 }
