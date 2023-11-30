@@ -1,0 +1,24 @@
+pipeline {
+    agent any 
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('jenkins-aws-secret-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
+        }
+    
+    stages {
+        stage ('provision server') {
+        
+            steps {
+                script {
+                    dir('./terraform_s3_hosting') {
+                    withAWS(region:"ap-southeast-2"){
+                        sh "terraform init-reconfigure"
+                        sh "terraform apply --auto-approve"
+                        }
+                    
+                    }
+                }
+            }
+        }
+    }
+}
