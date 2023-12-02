@@ -28,12 +28,8 @@ pipeline {
                         }   else if (params.Terraform_Action == 'destroy') {
                             sh "terraform destroy -auto-approve"
                         } else {
-                            error "Invalid value for Terraform_Action: ${params.Terraform_Action}"
-                        }
-                        
-                        
-                        }
-                    
+                            error "Invalid value for Terraform_Action: ${params.Terraform_Action}"                        
+                        }                  
                     }
                 }
             }
