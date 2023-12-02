@@ -20,19 +20,21 @@ pipeline {
             steps {
                 echo "${params.Terraform_Action}"
                 script {
-                    dir('./terraform_s3_hosting') 
-                    withAWS(region:"ap-southeast-2"){
-                        sh "terraform init"
-                        if (params.Terraform_Action == 'apply') {
-                            sh "terraform apply -auto-approve"
-                        }   else if (params.Terraform_Action == 'destroy') {
-                            sh "terraform destroy -auto-approve"
-                        } else {
-                            error "Invalid value for Terraform_Action: ${params.Terraform_Action}"                        
-                        }                  
+                    dir('./terraform_s3_hosting') {
+                        withAWS(region:"ap-southeast-2"){
+                            sh "terraform init"
+                            if (params.Terraform_Action == 'apply') {
+                                sh "terraform apply -auto-approve"
+                            }   else if (params.Terraform_Action == 'destroy') {
+                                sh "terraform destroy -auto-approve"
+                            } else {
+                                error "Invalid value for Terraform_Action: ${params.Terraform_Action}"                        
+                            }     
+                        }             
                     }
                 }
             }
         }
     }
 }
+
